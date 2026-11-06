@@ -1,3 +1,10 @@
+//
+//  ContentView.swift
+//  ContentView
+//
+//  Created by Vladislav Katashov on 06.11.2026.
+//
+
 import SwiftUI
 
 struct ContentView: View {
@@ -20,6 +27,11 @@ struct ContentView: View {
             DeadlinesPlaceholderView()
                 .tabItem {
                     Label("Дедлайны", systemImage: "checklist")
+                }
+
+            StudentAccountView()
+                .tabItem {
+                    Label("Личный кабинет", systemImage: "person.crop.circle")
                 }
         }
         .tint(.indigo)
