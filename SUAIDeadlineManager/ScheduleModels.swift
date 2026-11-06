@@ -1,3 +1,11 @@
+//
+//  ScheduleModels.swift
+//  ScheduleModels
+//
+//  Created by Vladislav Katashov on 06.11.2026.
+//
+
+
 import Foundation
 
 struct ScheduleOption: Identifiable, Hashable, Codable {

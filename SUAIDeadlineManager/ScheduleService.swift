@@ -1,3 +1,10 @@
+//
+//  ScheduleService.swift
+//  ScheduleService
+//
+//  Created by Vladislav Katashov on 06.11.2026.
+//
+
 import Foundation
 
 struct ScheduleService {

@@ -1,3 +1,11 @@
+//
+//  ScheduleStore.swift
+//  ScheduleStore
+//
+//  Created by Vladislav Katashov on 06.11.2026.
+//
+
+
 import Foundation
 
 @MainActor
