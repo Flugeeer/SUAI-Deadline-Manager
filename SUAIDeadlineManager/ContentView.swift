@@ -38,7 +38,7 @@ struct ContentView: View {
                     Label("Личный кабинет", systemImage: "person.crop.circle")
                 }
         }
-        .tint(.indigo)
+        .tint(.blue)
         .task {
             // Сначала получаем актуальные идентификаторы групп с сайта ГУАП.
             await scheduleStore.loadCatalog()
