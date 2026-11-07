@@ -8,12 +8,14 @@
 
 import SwiftUI
 
+/// Обязательный выбор основной группы при первом запуске приложения.
 struct GroupOnboardingView: View {
     @ObservedObject var store: ScheduleStore
     let onSelect: (ScheduleOption) -> Void
 
     @State private var searchText = ""
 
+    /// Сужает уже загруженный каталог по введённому номеру группы.
     private var filteredGroups: [ScheduleOption] {
         guard !searchText.isEmpty else { return store.catalog.groups }
         return store.catalog.groups.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
