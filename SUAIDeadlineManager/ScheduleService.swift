@@ -7,18 +7,22 @@
 
 import Foundation
 
+/// Загружает HTML с официальной страницы ГУАП и преобразует его в модели приложения.
 struct ScheduleService {
     private let baseURL = URL(string: "https://guap.ru/rasp")!
 
+    /// Загружает варианты групп, преподавателей, кафедр и аудиторий.
     func loadCatalog() async throws -> ScheduleCatalog {
         let html = try await loadHTML(from: baseURL)
         return ScheduleHTMLParser().parseCatalog(html)
     }
 
+    /// Формирует запрос по выбранным фильтрам и возвращает готовое расписание.
     func loadSchedule(for criteria: ScheduleCriteria) async throws -> [ScheduleDay] {
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)!
         var items: [URLQueryItem] = []
 
+        // Имена параметров совпадают с параметрами формы на guap.ru/rasp.
         if let group = criteria.group {
             items.append(URLQueryItem(name: "gr", value: group.id))
         }
@@ -37,6 +41,7 @@ struct ScheduleService {
         return ScheduleHTMLParser().parseSchedule(html)
     }
 
+    /// Выполняет общий HTTP-запрос и проверяет корректность ответа сервера.
     private func loadHTML(from url: URL) async throws -> String {
         var request = URLRequest(url: url)
         request.timeoutInterval = 30
@@ -54,7 +59,9 @@ struct ScheduleService {
     }
 }
 
+/// Разбирает текущую HTML-разметку guap.ru/rasp без сторонних зависимостей.
 struct ScheduleHTMLParser {
+    /// Извлекает элементы из четырёх выпадающих списков поисковой формы.
     func parseCatalog(_ html: String) -> ScheduleCatalog {
         ScheduleCatalog(
             groups: options(in: html, selectID: "selGroup"),
@@ -64,6 +71,7 @@ struct ScheduleHTMLParser {
         )
     }
 
+    /// Делит страницу по заголовкам дней и разбирает занятия каждого дня.
     func parseSchedule(_ html: String) -> [ScheduleDay] {
         let headings = matches(
             pattern: #"<h4[^>]*>(.*?)</h4>"#,
@@ -85,6 +93,7 @@ struct ScheduleHTMLParser {
         }
     }
 
+    /// Возвращает значения `<option>` указанного элемента `<select>`.
     private func options(in html: String, selectID: String) -> [ScheduleOption] {
         let escapedID = NSRegularExpression.escapedPattern(for: selectID)
         let selectPattern = #"<select[^>]*id="\#(escapedID)"[^>]*>(.*?)</select>"#
@@ -108,6 +117,7 @@ struct ScheduleHTMLParser {
         }
     }
 
+    /// Последовательно читает маркеры номера пары и следующие за ними занятия.
     private func parseLessons(in segment: String) -> [ScheduleLesson] {
         let tokenPattern = #"<div class="(?:mt-3 text-danger|mb-3 py-2 d-flex gap-2)">"#
         let tokens = matches(pattern: tokenPattern, in: segment)
@@ -121,6 +131,7 @@ struct ScheduleHTMLParser {
             guard end > start else { continue }
             let block = substring(segment, range: NSRange(location: start, length: end - start))
             if block.contains("mt-3 text-danger") {
+                // Номер и время применяются ко всем блокам до следующего маркера пары.
                 if let pair = firstMatch(
                     pattern: #"([0-9]+)\s*пара.*?\(([^<]+)\)"#,
                     in: block,
@@ -162,6 +173,7 @@ struct ScheduleHTMLParser {
         return lessons
     }
 
+    /// Извлекает текст первого `<div>`, в классе которого есть указанное значение.
     private func content(ofClassContaining className: String, in html: String) -> String? {
         let escapedClass = NSRegularExpression.escapedPattern(for: className)
         let pattern = #"<div class="[^"]*\#(escapedClass)[^"]*">(.*?)</div>"#
@@ -171,6 +183,7 @@ struct ScheduleHTMLParser {
         return value.isEmpty ? nil : value
     }
 
+    /// Читает ссылки вида `?gr=...`, `?pr=...`, `?ch=...` и `?ad=...`.
     private func parseLinks(in html: String) -> [(key: String, name: String)] {
         matches(
             pattern: #"<a[^>]*href="\?([a-z]+)=([^"]+)"[^>]*>(.*?)</a>"#,
@@ -185,6 +198,7 @@ struct ScheduleHTMLParser {
         }
     }
 
+    /// Удаляет HTML-теги, декодирует сущности и нормализует пробелы.
     private func clean(fragment: String) -> String {
         var value = fragment.replacingOccurrences(
             of: #"<[^>]+>"#,
@@ -204,6 +218,7 @@ struct ScheduleHTMLParser {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    /// Преобразует числовые HTML-сущности, включая шестнадцатеричные записи.
     private func decodeNumericEntities(_ value: String) -> String {
         var result = value
         let regex = try! NSRegularExpression(pattern: #"&#(x[0-9a-fA-F]+|[0-9]+);"#)
