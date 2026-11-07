@@ -8,6 +8,7 @@
 
 import SwiftUI
 
+/// Основной экран нативного расписания с обработкой загрузки, ошибок и пустого результата.
 struct ScheduleView: View {
     @ObservedObject var store: ScheduleStore
     let primaryGroupID: String
@@ -65,6 +66,7 @@ struct ScheduleView: View {
         }
     }
 
+    /// Список дней и карточек занятий для текущего набора фильтров.
     private var scheduleList: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 18) {
@@ -87,6 +89,7 @@ struct ScheduleView: View {
         .background(Color(.systemGroupedBackground))
     }
 
+    /// Кратко показывает, по каким параметрам сейчас загружено расписание.
     private var filterHeader: some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Image(systemName: "line.3.horizontal.decrease.circle.fill")
@@ -139,12 +142,14 @@ struct ScheduleView: View {
         }
     }
 
+    /// Возвращает пользователя к группе, выбранной при первом запуске.
     private func loadPrimaryGroup() {
         guard let group = store.option(id: primaryGroupID, in: store.catalog.groups) else { return }
         Task { await store.loadSchedule(for: ScheduleCriteria(group: group)) }
     }
 }
 
+/// Карточка одного занятия с номером пары, временем, аудиторией и преподавателем.
 private struct LessonCard: View {
     let lesson: ScheduleLesson
 
