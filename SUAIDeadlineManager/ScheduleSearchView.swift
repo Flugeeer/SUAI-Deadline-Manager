@@ -8,6 +8,7 @@
 
 import SwiftUI
 
+/// Экран составного поиска по группе, преподавателю, кафедре и аудитории.
 struct ScheduleSearchView: View {
     @ObservedObject var store: ScheduleStore
     let onApply: (ScheduleCriteria) -> Void
@@ -15,6 +16,7 @@ struct ScheduleSearchView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var criteria: ScheduleCriteria
 
+    /// Начинает редактирование с фильтров, которые уже применены к расписанию.
     init(store: ScheduleStore, onApply: @escaping (ScheduleCriteria) -> Void) {
         self.store = store
         self.onApply = onApply
@@ -56,6 +58,7 @@ struct ScheduleSearchView: View {
         }
     }
 
+    /// Создаёт строку перехода к универсальному выбору одного фильтра.
     private func optionRow(
         _ title: String,
         icon: String,
@@ -79,6 +82,7 @@ struct ScheduleSearchView: View {
     }
 }
 
+/// Переиспользуемый список вариантов с локальным поиском по названию.
 private struct OptionPickerView: View {
     let title: String
     let options: [ScheduleOption]
@@ -87,6 +91,7 @@ private struct OptionPickerView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
 
+    /// Фильтрация выполняется локально, повторный сетевой запрос не требуется.
     private var filteredOptions: [ScheduleOption] {
         guard !searchText.isEmpty else { return options }
         return options.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
