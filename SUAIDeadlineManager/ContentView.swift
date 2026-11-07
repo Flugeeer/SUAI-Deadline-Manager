@@ -7,8 +7,12 @@
 
 import SwiftUI
 
+/// Корневой экран приложения с основными разделами и логикой первого запуска.
 struct ContentView: View {
+    // Один экземпляр хранилища используется всеми экранами расписания.
     @StateObject private var scheduleStore = ScheduleStore()
+
+    // Основная группа сохраняется в UserDefaults и восстанавливается после перезапуска.
     @AppStorage("primaryGroupID") private var primaryGroupID = ""
     @AppStorage("primaryGroupName") private var primaryGroupName = ""
     @State private var showsOnboarding = false
@@ -36,12 +40,14 @@ struct ContentView: View {
         }
         .tint(.indigo)
         .task {
+            // Сначала получаем актуальные идентификаторы групп с сайта ГУАП.
             await scheduleStore.loadCatalog()
             if primaryGroupID.isEmpty {
                 showsOnboarding = true
             } else if let group = scheduleStore.option(id: primaryGroupID, in: scheduleStore.catalog.groups) {
                 await scheduleStore.loadSchedule(for: ScheduleCriteria(group: group))
             } else {
+                // Сохранённая группа могла исчезнуть после обновления расписания.
                 primaryGroupID = ""
                 primaryGroupName = ""
                 showsOnboarding = true
@@ -61,6 +67,7 @@ struct ContentView: View {
     }
 }
 
+/// Временный экран раздела дедлайнов до реализации хранения лабораторных работ.
 private struct DeadlinesPlaceholderView: View {
     var body: some View {
         NavigationStack {
