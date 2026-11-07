@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Центральное состояние расписания, безопасно публикуемое только из главного потока.
 @MainActor
 final class ScheduleStore: ObservableObject {
     @Published private(set) var catalog = ScheduleCatalog()
@@ -18,6 +19,7 @@ final class ScheduleStore: ObservableObject {
 
     private let service = ScheduleService()
 
+    /// Загружает каталог один раз и позволяет повторить запрос после ошибки.
     func loadCatalog() async {
         guard catalogState != .loading, catalog.groups.isEmpty else { return }
         catalogState = .loading
@@ -31,6 +33,7 @@ final class ScheduleStore: ObservableObject {
         }
     }
 
+    /// Загружает расписание, сохраняя критерии для обновления жестом pull-to-refresh.
     func loadSchedule(for criteria: ScheduleCriteria) async {
         guard !criteria.isEmpty else { return }
         currentCriteria = criteria
@@ -43,10 +46,12 @@ final class ScheduleStore: ObservableObject {
         }
     }
 
+    /// Восстанавливает полный объект фильтра по сохранённому идентификатору.
     func option(id: String, in options: [ScheduleOption]) -> ScheduleOption? {
         options.first { $0.id == id }
     }
 
+    /// Преобразует техническую сетевую ошибку в понятное сообщение интерфейса.
     private static func message(for error: Error) -> String {
         if (error as? URLError)?.code == .notConnectedToInternet {
             return "Нет подключения к интернету."
