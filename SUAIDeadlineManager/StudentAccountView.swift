@@ -9,6 +9,7 @@
 import SafariServices
 import SwiftUI
 
+/// Точка входа в официальный личный кабинет студента ГУАП.
 struct StudentAccountView: View {
     private let accountURL = URL(string: "https://pro.guap.ru/inside/profile")!
 
@@ -41,6 +42,7 @@ struct StudentAccountView: View {
             }
             .navigationTitle("Личный кабинет")
             .sheet(isPresented: $showsAccount) {
+                // Системный Safari сохраняет веб-сессию и не передаёт пароль приложению.
                 SafariView(url: accountURL)
                     .ignoresSafeArea()
             }
@@ -48,10 +50,12 @@ struct StudentAccountView: View {
     }
 }
 
+/// SwiftUI-обёртка над безопасным системным браузером `SFSafariViewController`.
 private struct SafariView: UIViewControllerRepresentable {
     let url: URL
 
     func makeUIViewController(context: Context) -> SFSafariViewController {
+        // Авторизация и все перенаправления на sso.guap.ru остаются внутри Safari.
         let configuration = SFSafariViewController.Configuration()
         configuration.entersReaderIfAvailable = false
         configuration.barCollapsingEnabled = true
@@ -62,6 +66,7 @@ private struct SafariView: UIViewControllerRepresentable {
         return controller
     }
 
+    // Контроллер не требует синхронизации после создания: URL остаётся неизменным.
     func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
 }
 
