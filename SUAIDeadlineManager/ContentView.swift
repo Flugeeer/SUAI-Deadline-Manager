@@ -28,7 +28,7 @@ struct ContentView: View {
                     Label("Расписание", systemImage: "calendar")
                 }
 
-            DeadlinesPlaceholderView()
+            DeadlinesView()
                 .tabItem {
                     Label("Дедлайны", systemImage: "checklist")
                 }
@@ -63,20 +63,6 @@ struct ContentView: View {
                 }
             }
             .interactiveDismissDisabled()
-        }
-    }
-}
-
-/// Временный экран раздела дедлайнов до реализации хранения лабораторных работ.
-private struct DeadlinesPlaceholderView: View {
-    var body: some View {
-        NavigationStack {
-            ContentUnavailableView {
-                Label("Дедлайны появятся здесь", systemImage: "checkmark.circle")
-            } description: {
-                Text("На следующем этапе сюда можно добавить лабораторные работы, сроки сдачи и напоминания.")
-            }
-            .navigationTitle("Дедлайны")
         }
     }
 }
