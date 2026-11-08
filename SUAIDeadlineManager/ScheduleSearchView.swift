@@ -31,17 +31,9 @@ struct ScheduleSearchView: View {
                     optionRow("Преподаватель", icon: "person", selection: $criteria.teacher, options: store.catalog.teachers)
                     optionRow("Кафедра", icon: "building.columns", selection: $criteria.chair, options: store.catalog.chairs)
                     optionRow("Аудитория", icon: "door.left.hand.open", selection: $criteria.room, options: store.catalog.rooms)
-                } footer: {
-                    Text("Фильтры можно сочетать. Например, выбрать преподавателя и аудиторию.")
                 }
 
-                if !criteria.isEmpty {
-                    Section {
-                        Button("Очистить все фильтры", role: .destructive) {
-                            criteria = ScheduleCriteria()
-                        }
-                    }
-                }
+                
             }
             .navigationTitle("Поиск расписания")
             .navigationBarTitleDisplayMode(.inline)
@@ -70,7 +62,7 @@ struct ScheduleSearchView: View {
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: icon)
-                    .foregroundStyle(.indigo)
+                    .foregroundStyle(.blue)
                     .frame(width: 24)
                 Text(title)
                 Spacer()
@@ -118,7 +110,7 @@ private struct OptionPickerView: View {
                         Spacer()
                         if selection == option {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(.indigo)
+                                .foregroundStyle(.blue)
                         }
                     }
                 }
