@@ -15,6 +15,27 @@ struct ScheduleView: View {
     let primaryGroupName: String
 
     @State private var showsSearch = false
+    @State private var selectedDayName = Self.currentDayName
+    @State private var showsOutsideGrid = false
+
+    private static let weekdayNames = [
+        "Понедельник", "Вторник", "Среда", "Четверг",
+        "Пятница", "Суббота", "Воскресенье"
+    ]
+
+    private static let weekdayShort = [
+        "Понедельник": "Пн", "Вторник": "Вт", "Среда": "Ср",
+        "Четверг": "Чт", "Пятница": "Пт", "Суббота": "Сб",
+        "Воскресенье": "Вс"
+    ]
+    
+
+    /// Название сегодняшнего дня в том же формате, который использует сайт ГУАП.
+    private static var currentDayName: String {
+        let weekday = Calendar.current.component(.weekday, from: Date())
+        let indexByCalendarWeekday = [6, 0, 1, 2, 3, 4, 5]
+        return weekdayNames[indexByCalendarWeekday[weekday - 1]]
+    }
 
     var body: some View {
         NavigationStack {
@@ -71,17 +92,21 @@ struct ScheduleView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 18) {
                 filterHeader
+                weekHeader
+                daySelector
+                selectedDaySection
 
-                ForEach(store.days) { day in
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(day.name)
-                            .font(.title2.bold())
-                            .foregroundStyle(day.name == "Вне сетки расписания" ? .orange : .primary)
-
-                        ForEach(day.lessons) { lesson in
-                            LessonCard(lesson: lesson)
+                if let outsideGrid = store.days.first(where: { $0.name == "Вне сетки расписания" }) {
+                    DisclosureGroup("Вне сетки расписания", isExpanded: $showsOutsideGrid) {
+                        VStack(spacing: 10) {
+                            ForEach(outsideGrid.lessons) { lesson in
+                                LessonCard(lesson: lesson)
+                            }
                         }
+                        .padding(.top, 10)
                     }
+                    .tint(.orange)
+                    .font(.headline)
                 }
             }
             .padding()
@@ -89,15 +114,101 @@ struct ScheduleView: View {
         .background(Color(.systemGroupedBackground))
     }
 
+    /// Показывает номер и тип недели, полученные вместе с расписанием.
+    private var weekHeader: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "calendar.badge.clock")
+                .foregroundStyle(.blue)
+            Text(store.weekContext.number.map { "\($0) неделя" } ?? "Текущая неделя")
+                .fontWeight(.semibold)
+            Spacer()
+            if let week = store.weekContext.week {
+                Text(week == .upper ? "▲ верхняя" : "▼ нижняя")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(week == .upper ? .red : .blue)
+            }
+        }
+        .padding()
+        .background(.background, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    /// Горизонтальный переключатель дней; при открытии выбран сегодняшний день.
+    private var daySelector: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(Self.weekdayNames, id: \.self) { dayName in
+                    Button {
+                        selectedDayName = dayName
+                    } label: {
+                        VStack(spacing: 3) {
+                            Text(Self.weekdayShort[dayName] ?? dayName)
+                                .font(.headline)
+                            if dayName == Self.currentDayName {
+                                Circle()
+                                    .fill(selectedDayName == dayName ? .white : .blue)
+                                    .frame(width: 4, height: 4)
+                            } else {
+                                Color.clear.frame(width: 4, height: 4)
+                            }
+                        }
+                        .frame(width: 42, height: 44)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(selectedDayName == dayName ? .white : .primary)
+                    .background(
+                        selectedDayName == dayName ? Color.blue : Color(.secondarySystemGroupedBackground),
+                        in: RoundedRectangle(cornerRadius: 12)
+                    )
+                    .accessibilityLabel(dayName)
+                }
+            }
+        }
+    }
+
+    /// Занятия выбранного дня, подходящие для текущей верхней или нижней недели.
+    @ViewBuilder
+    private var selectedDaySection: some View {
+        let lessons = lessonsForSelectedDay
+        VStack(alignment: .leading, spacing: 10) {
+            Text(selectedDayName)
+                .font(.title2.bold())
+
+            if lessons.isEmpty {
+                HStack(spacing: 12) {
+                    Image(systemName: "moon.zzz")
+                        .font(.title2)
+                        .foregroundStyle(.blue)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Сегодня занятий нет!")
+                            .fontWeight(.semibold)
+                        Text("Можно спать спокойно!")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(.background, in: RoundedRectangle(cornerRadius: 16))
+            } else {
+                ForEach(lessons) { lesson in
+                    LessonCard(lesson: lesson)
+                }
+            }
+        }
+    }
+
+    private var lessonsForSelectedDay: [ScheduleLesson] {
+        guard let day = store.days.first(where: { $0.name == selectedDayName }) else { return [] }
+        guard let currentWeek = store.weekContext.week else { return day.lessons }
+        return day.lessons.filter { $0.week == .every || $0.week == currentWeek }
+    }
+
     /// Кратко показывает, по каким параметрам сейчас загружено расписание.
     private var filterHeader: some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Image(systemName: "line.3.horizontal.decrease.circle.fill")
-                .foregroundStyle(.indigo)
+                .foregroundStyle(.blue)
             VStack(alignment: .leading, spacing: 2) {
-                Text("Сейчас показано")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
                 Text(store.currentCriteria.title)
                     .font(.subheadline.weight(.semibold))
                     .lineLimit(2)
@@ -174,7 +285,7 @@ private struct LessonCard: View {
                 HStack {
                     Text(lesson.kind)
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.indigo)
+                        .foregroundStyle(.blue)
                     Spacer()
                     if lesson.week != .every {
                         Text(lesson.week == .upper ? "▲ верхняя" : "▼ нижняя")
