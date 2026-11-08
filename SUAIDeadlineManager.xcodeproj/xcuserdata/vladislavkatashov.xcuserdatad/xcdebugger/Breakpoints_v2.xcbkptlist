@@ -18,6 +18,108 @@
             endingLineNumber = "13"
             landmarkName = "GroupOnboardingView"
             landmarkType = "14">
+            <Locations>
+               <Location
+                  uuid = "06B42206-36C7-4906-8CF9-02D87B957440 - 763ba7003922a823"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "property wrapper backing initializer of SUAIDeadlineManager.GroupOnboardingView.store : SUAIDeadlineManager.ScheduleStore"
+                  moduleName = "SUAIDeadlineManager.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vladislavkatashov/SwiftProjects/SUAIDeadlineManager/SUAIDeadlineManager/GroupOnboardingView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "06B42206-36C7-4906-8CF9-02D87B957440 - 36d91a6fdba8fd9b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SUAIDeadlineManager.GroupOnboardingView.store.getter : SUAIDeadlineManager.ScheduleStore"
+                  moduleName = "SUAIDeadlineManager.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vladislavkatashov/SwiftProjects/SUAIDeadlineManager/SUAIDeadlineManager/GroupOnboardingView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "06B42206-36C7-4906-8CF9-02D87B957440 - 13c8c81fc65ef67c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SUAIDeadlineManager.GroupOnboardingView.store.setter : SUAIDeadlineManager.ScheduleStore"
+                  moduleName = "SUAIDeadlineManager.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vladislavkatashov/SwiftProjects/SUAIDeadlineManager/SUAIDeadlineManager/GroupOnboardingView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "13"
+                  endingLineNumber = "13">
+               </Location>
+               <Location
+                  uuid = "06B42206-36C7-4906-8CF9-02D87B957440 - ac41106683a98f6f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SUAIDeadlineManager.GroupOnboardingView.store.modify : SUAIDeadlineManager.ScheduleStore"
+                  moduleName = "SUAIDeadlineManager.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vladislavkatashov/SwiftProjects/SUAIDeadlineManager/SUAIDeadlineManager/GroupOnboardingView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "13"
+                  endingLineNumber = "13">
+               </Location>
+               <Location
+                  uuid = "06B42206-36C7-4906-8CF9-02D87B957440 - 76db066b91b9219f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SUAIDeadlineManager.GroupOnboardingView.store.modify : SUAIDeadlineManager.ScheduleStore with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "SUAIDeadlineManager.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "06B42206-36C7-4906-8CF9-02D87B957440 - e9ca251a7cced919"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SUAIDeadlineManager.GroupOnboardingView.$store.getter : SwiftUI.ObservedObject&lt;SUAIDeadlineManager.ScheduleStore&gt;.Wrapper"
+                  moduleName = "SUAIDeadlineManager.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vladislavkatashov/SwiftProjects/SUAIDeadlineManager/SUAIDeadlineManager/GroupOnboardingView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "13"
+                  endingLineNumber = "13">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B98517DF-5558-425E-9E75-82CD33335A57"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SUAIDeadlineManager/ScheduleView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "221"
+            endingLineNumber = "221"
+            landmarkName = "filterHeader"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
