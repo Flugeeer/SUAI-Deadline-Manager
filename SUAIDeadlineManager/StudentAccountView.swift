@@ -1,73 +1,123 @@
-//
-//  StudentAccountView.swift
-//  StudentAccountView
-//
-//  Created by Vladislav Katashov on 06.11.2026.
-//
-
-
-import SafariServices
 import SwiftUI
 
-/// Точка входа в официальный личный кабинет студента ГУАП.
+/// Нативное представление профиля, полученного после официальной авторизации ГУАП.
 struct StudentAccountView: View {
-    private let accountURL = URL(string: "https://pro.guap.ru/inside/profile")!
-
-    @State private var showsAccount = false
+    @State private var snapshot: StudentProfileSnapshot?
+    @State private var browserMode: ProfileBrowserMode?
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    Image(systemName: "person.crop.circle.badge.checkmark")
-                        .font(.system(size: 64))
-                        .foregroundStyle(.blue)
-                        .accessibilityHidden(true)
+                LazyVStack(spacing: 18) {
+                    if let snapshot {
+                        profileHeader(snapshot)
 
-                    VStack(spacing: 8) {
-                        Text("Личный кабинет ГУАП")
-                            .font(.title2.bold())
-                    }
+                        ForEach(snapshot.sections) { section in
+                            profileSection(section)
+                        }
 
-                    Button {
-                        showsAccount = true
-                    } label: {
-                        Label("Открыть личный кабинет", systemImage: "arrow.up.right.square")
-                            .frame(maxWidth: .infinity)
+                        Button {
+                            browserMode = .capture
+                        } label: {
+                            Label("Обновить данные", systemImage: "arrow.clockwise")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button {
+                            browserMode = .fullCabinet
+                        } label: {
+                            Label("Открыть полный кабинет", systemImage: "rectangle.portrait.and.arrow.right")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                    } else {
+                        signedOutView
                     }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
                 }
-                .padding(24)
+                .padding()
             }
-            .navigationTitle("Личный кабинет")
-            .sheet(isPresented: $showsAccount) {
-                // Системный Safari сохраняет веб-сессию и не передаёт пароль приложению.
-                SafariView(url: accountURL)
-                    .ignoresSafeArea()
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Профиль")
+            .sheet(item: $browserMode) { mode in
+                ProfileBrowserView(mode: mode) { newSnapshot in
+                    snapshot = newSnapshot
+                }
             }
         }
     }
-}
 
-/// SwiftUI-обёртка над безопасным системным браузером `SFSafariViewController`.
-private struct SafariView: UIViewControllerRepresentable {
-    let url: URL
-
-    func makeUIViewController(context: Context) -> SFSafariViewController {
-        // Авторизация и все перенаправления на sso.guap.ru остаются внутри Safari.
-        let configuration = SFSafariViewController.Configuration()
-        configuration.entersReaderIfAvailable = false
-        configuration.barCollapsingEnabled = true
-
-        let controller = SFSafariViewController(url: url, configuration: configuration)
-        controller.dismissButtonStyle = .close
-        controller.preferredControlTintColor = .systemIndigo
-        return controller
+    private var signedOutView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "person.fill")
+                .font(.system(size: 64))
+                .foregroundStyle(.blue)
+                .accessibilityHidden(true)
+            
+            VStack(spacing: 8) {
+                Text("Профиль ГУАП")
+                    .font(.title2.bold())
+            }
+            
+            Button {
+                browserMode = .capture
+            } label: {
+                Label("Загрузить профиль", systemImage: "person.badge.key")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+        }
     }
 
-    // Контроллер не требует синхронизации после создания: URL остаётся неизменным.
-    func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
+    private func profileHeader(_ snapshot: StudentProfileSnapshot) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: "person.crop.circle.fill")
+                .font(.system(size: 52))
+                .foregroundStyle(.blue)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(snapshot.displayName)
+                    .font(.title3.bold())
+                Label("Авторизация ГУАП", systemImage: "checkmark.shield.fill")
+                    .font(.caption)
+                    .foregroundStyle(.green)
+            }
+            Spacer()
+        }
+        .padding()
+        .background(.background, in: RoundedRectangle(cornerRadius: 18))
+    }
+
+    private func profileSection(_ section: StudentProfileSection) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(section.title)
+                .font(.headline)
+                .padding([.horizontal, .top])
+                .padding(.bottom, 8)
+
+            if section.items.isEmpty {
+                Text("На странице не найдено доступных полей.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding()
+            } else {
+                ForEach(Array(section.items.enumerated()), id: \.element.id) { index, item in
+                    if index > 0 { Divider().padding(.leading) }
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(item.label)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(item.value)
+                            .font(.body)
+                            .textSelection(.enabled)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                }
+            }
+        }
+        .background(.background, in: RoundedRectangle(cornerRadius: 18))
+    }
 }
 
 #Preview {
