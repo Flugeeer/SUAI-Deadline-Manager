@@ -18,7 +18,7 @@ struct ScheduleService {
     }
 
     /// Формирует запрос по выбранным фильтрам и возвращает готовое расписание.
-    func loadSchedule(for criteria: ScheduleCriteria) async throws -> [ScheduleDay] {
+    func loadSchedule(for criteria: ScheduleCriteria) async throws -> ScheduleResponse {
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)!
         var items: [URLQueryItem] = []
 
@@ -38,7 +38,11 @@ struct ScheduleService {
 
         components.queryItems = items
         let html = try await loadHTML(from: components.url!)
-        return ScheduleHTMLParser().parseSchedule(html)
+        let parser = ScheduleHTMLParser()
+        return ScheduleResponse(
+            days: parser.parseSchedule(html),
+            weekContext: parser.parseWeekContext(html)
+        )
     }
 
     /// Выполняет общий HTTP-запрос и проверяет корректность ответа сервера.
@@ -91,6 +95,21 @@ struct ScheduleHTMLParser {
             let lessons = parseLessons(in: segment)
             return lessons.isEmpty ? nil : ScheduleDay(name: dayName, lessons: lessons)
         }
+    }
+
+    /// Извлекает номер и чётность текущей недели из информационного блока страницы.
+    func parseWeekContext(_ html: String) -> ScheduleWeekContext {
+        guard let match = firstMatch(
+            pattern: #"<span class="week([12])"[^>]*>.*?([0-9]+).*?неделя</span>"#,
+            in: html,
+            options: [.dotMatchesLineSeparators, .caseInsensitive]
+        ), match.numberOfRanges > 2 else {
+            return .unknown
+        }
+
+        let marker = substring(html, range: match.range(at: 1))
+        let number = Int(substring(html, range: match.range(at: 2)))
+        return ScheduleWeekContext(number: number, week: marker == "1" ? .upper : .lower)
     }
 
     /// Возвращает значения `<option>` указанного элемента `<select>`.
