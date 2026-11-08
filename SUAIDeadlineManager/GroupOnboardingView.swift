@@ -26,7 +26,7 @@ struct GroupOnboardingView: View {
             Group {
                 switch store.catalogState {
                 case .idle, .loading:
-                    ProgressView("Загружаем список групп…")
+                    ProgressView("Загружаем список групп")
                 case .failed(let message):
                     ContentUnavailableView {
                         Label("Не удалось загрузить группы", systemImage: "wifi.exclamationmark")
