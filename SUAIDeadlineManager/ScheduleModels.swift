@@ -68,6 +68,20 @@ struct ScheduleDay: Identifiable, Hashable {
     let lessons: [ScheduleLesson]
 }
 
+/// Номер и тип текущей учебной недели по данным страницы ГУАП.
+struct ScheduleWeekContext: Hashable {
+    let number: Int?
+    let week: LessonWeek?
+
+    static let unknown = ScheduleWeekContext(number: nil, week: nil)
+}
+
+/// Полный результат разбора страницы: занятия и контекст текущей недели.
+struct ScheduleResponse {
+    let days: [ScheduleDay]
+    let weekContext: ScheduleWeekContext
+}
+
 /// Состояние асинхронной загрузки каталога или расписания.
 enum ScheduleLoadingState: Equatable {
     case idle
