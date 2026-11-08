@@ -13,6 +13,7 @@ import Foundation
 final class ScheduleStore: ObservableObject {
     @Published private(set) var catalog = ScheduleCatalog()
     @Published private(set) var days: [ScheduleDay] = []
+    @Published private(set) var weekContext: ScheduleWeekContext = .unknown
     @Published private(set) var catalogState: ScheduleLoadingState = .idle
     @Published private(set) var scheduleState: ScheduleLoadingState = .idle
     @Published private(set) var currentCriteria = ScheduleCriteria()
@@ -39,7 +40,9 @@ final class ScheduleStore: ObservableObject {
         currentCriteria = criteria
         scheduleState = .loading
         do {
-            days = try await service.loadSchedule(for: criteria)
+            let response = try await service.loadSchedule(for: criteria)
+            days = response.days
+            weekContext = response.weekContext
             scheduleState = .loaded
         } catch {
             scheduleState = .failed(Self.message(for: error))
